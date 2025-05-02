@@ -14,11 +14,14 @@ return new class extends Migration
         Schema::create('recipes', function (Blueprint $table) {
             $table->id();
             $table->string('title');
-            $table->integer('prep_time');
-            $table->string('budget'); // € ou €€
-            $table->text('image')->nullable();
-            $table->json('ingredients');
-            $table->text('steps')->nullable(); // pour plus tard
+            $table->text('description');
+            $table->integer('prep_time'); // en minutes
+            $table->decimal('cost', 8, 2); // coût estimé
+            $table->string('difficulty'); // facile/moyen/difficile
+            $table->json('ingredients'); // liste des ingrédients
+            $table->text('steps'); // étapes de préparation
+            $table->string('image_url')->nullable();
+            $table->boolean('is_vegetarian')->default(false);
             $table->timestamps();
         });
     }

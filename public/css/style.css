@@ -9,6 +9,9 @@
     --text-color: #444444;
     --font-primary: 'Poppins', sans-serif;
     --font-secondary: 'Montserrat', sans-serif;
+    --transition-speed: 0.3s;
+    --border-radius: 0.5rem;
+    --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 /* Base Styles */
@@ -47,7 +50,10 @@ img {
 }
 
 /* Typography */
-h1, h2, h3, h4 {
+h1,
+h2,
+h3,
+h4 {
     font-family: var(--font-secondary);
     font-weight: 700;
     color: var(--secondary-color);
@@ -87,6 +93,34 @@ p {
     margin: 1rem auto 0;
 }
 
+/* Form container to center the login box */
+.login-container {
+    background-color: var(--gray-color);
+}
+
+/* Styles for the login form */
+.login-form {
+    background-color: var(--light-color);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+}
+
+/* Input fields and buttons */
+.input-style {
+    padding: 0.8rem;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 1rem;
+    font-family: var(--font-primary);
+    background-color: var(--light-color);
+    transition: border 0.3s ease;
+}
+
+.input-style:focus {
+    border-color: var(--primary-color);
+    outline: none;
+}
+
 /* Buttons */
 .btn {
     display: inline-block;
@@ -97,11 +131,16 @@ p {
     cursor: pointer;
     transition: all 0.3s ease;
     border: none;
+    will-change: transform;
 }
 
 .btn-primary {
     background-color: var(--primary-color);
     color: var(--secondary-color);
+    padding: 0.8rem 1.5rem;
+    border-radius: 50px;
+    text-transform: uppercase;
+    font-weight: 600;
 }
 
 .btn-primary:hover {
@@ -134,6 +173,26 @@ p {
 
 .btn-add-to-list:hover {
     background-color: #FF5252;
+}
+
+/* Focused and error states */
+.x-input-error {
+    color: var(--accent-color);
+    font-size: 0.875rem;
+    margin-top: 0.5rem;
+}
+
+/* Spacing adjustments for form elements */
+.mb-4 {
+    margin-bottom: 1.5rem;
+}
+
+.mt-4 {
+    margin-top: 1.5rem;
+}
+
+.ms-3 {
+    margin-left: 1rem;
 }
 
 /* Header */
@@ -273,6 +332,14 @@ p {
     overflow: hidden;
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
     transition: transform 0.3s ease;
+    will-change: transform;
+    container-type: inline-size;
+}
+
+@container (min-width: 350px) {
+    .recipe-info {
+        padding: 2rem;
+    }
 }
 
 .recipe-card:hover {
@@ -314,6 +381,18 @@ p {
 .section-cta {
     text-align: center;
     margin-top: 3rem;
+}
+
+/* Focus visible amélioré */
+.btn:focus,
+.input-style:focus {
+    outline: 2px solid var(--accent-color);
+    outline-offset: 2px;
+}
+
+/* Optimiser les repaints */
+.sticky-header {
+    backface-visibility: hidden;
 }
 
 /* Filters */
@@ -399,6 +478,7 @@ p {
 
 /* Responsive Design */
 @media (max-width: 768px) {
+
     .main-nav {
         display: none;
         position: absolute;
@@ -408,49 +488,87 @@ p {
         background-color: var(--light-color);
         padding: 1rem;
         box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease;
+        opacity: 0;
+        transform: translateY(-10px);
+        pointer-events: none;
     }
-    
+
+    .hidden {
+        display: none !important;
+    }
+
     .main-nav.active {
         display: block;
+        opacity: 1;
+        transform: translateY(0);
+        pointer-events: auto;
     }
-    
+
     .main-nav ul {
         flex-direction: column;
     }
-    
+
     .main-nav li {
         margin: 0.5rem 0;
     }
-    
+
     .mobile-menu-toggle {
         display: block;
     }
-    
+
     .hero {
         text-align: center;
     }
-    
+
     .hero-content {
         max-width: 100%;
     }
-    
+
     .hero-buttons {
         justify-content: center;
     }
-    
+
     .hero-image {
         display: none;
     }
-    
+
     .filters {
         flex-direction: column;
     }
-    
+
     .filter-group {
         width: 100%;
     }
-    
+
     .filter-group select {
         width: 100%;
     }
 }
+
+/* Contraste des couleurs */
+@media (prefers-contrast: more) {
+    :root {
+        --text-color: #000000;
+    }
+}
+
+/* Container queries (moderne) */
+.recipe-card {
+    container-type: inline-size;
+}
+
+@container (min-width: 350px) {
+    .recipe-info {
+        padding: 2rem;
+    }
+}
+
+/* Touch targets plus grands */
+@media (pointer: coarse) {
+    .btn {
+        min-width: 44px;
+        min-height: 44px;
+    }
+}
+

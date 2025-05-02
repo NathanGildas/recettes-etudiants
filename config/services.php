@@ -35,4 +35,10 @@ return [
         ],
     ],
 
+    'spoonacular' => [
+        'key' => env('9897e60e8be543ec8469913b6d7ad962'),
+        'base_url' => 'https://api.spoonacular.com', // Ajout recommandé
+        'rate_limit' => env('SPOONACULAR_RATE_LIMIT', 50), // Requêtes/minute
+    ],
+
 ];
