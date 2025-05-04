@@ -9,8 +9,9 @@ class HomeController extends Controller
 {
     public function index()
     {
-        $featuredRecipes = Recipe::where('is_featured', true)->take(3)->get();
-        return view('home', compact('featuredRecipes'));
+        // Exemple : 3 recettes aléatoires
+        $recipes = \App\Models\Recipe::inRandomOrder()->limit(3)->get();
+        return view('home', compact('recipes'));
     }
     public function about()
     {

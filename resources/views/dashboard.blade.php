@@ -15,8 +15,8 @@
                             Voici votre espace personnel. Retrouvez vos recettes favorites et vos dernières activités.
                         </p>
                     </div>
-                    <a href="{{ route('recipes.create') }}" 
-                       class="btn-primary inline-flex items-center gap-2">
+                    <a href="{{ route('recipes.create') }}"
+                        class="btn-primary inline-flex items-center gap-2">
                         <i class="fas fa-plus"></i>
                         Ajouter une recette
                     </a>
@@ -37,7 +37,7 @@
                     </div>
                 </div>
             </div>
-            
+
             <!-- Ajouter d'autres cartes de statistiques -->
         </div>
 
@@ -49,51 +49,51 @@
                     Vos recettes favorites
                 </h2>
             </div>
-            
+
             <div class="divide-y divide-gray-200 dark:divide-gray-700">
                 @forelse(auth()->user()->favorites as $favorite)
-                    <div class="p-6 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition">
-                        <div class="flex flex-col md:flex-row gap-4">
-                            @if($favorite->image_url)
-                                <img src="{{ $favorite->image_url }}" 
-                                     alt="{{ $favorite->title }}" 
-                                     class="w-full md:w-32 h-24 object-cover rounded-lg"
-                                     loading="lazy">
-                            @endif
-                            <div class="flex-1">
-                                <h3 class="font-bold text-lg">
-                                    <a href="{{ route('recipes.show', $favorite->id) }}" 
-                                       class="hover:text-primary transition">
-                                        {{ $favorite->title }}
-                                    </a>
-                                </h3>
-                                <div class="flex flex-wrap gap-4 text-sm text-gray-600 dark:text-gray-400 mt-2">
-                                    <span>{{ $favorite->prep_time }} min</span>
-                                    <span>{{ $favorite->cost }}€</span>
-                                    @if($favorite->is_vegetarian)
-                                        <span class="text-green-600 dark:text-green-400">Végétarien</span>
-                                    @endif
-                                </div>
-                            </div>
-                            <div class="flex items-center gap-2">
-                                <button @click="toggleFavorite({{ $favorite->id }})" 
-                                        class="text-red-500 hover:text-red-700 p-2">
-                                    <i class="fas fa-heart"></i>
-                                </button>
-                                <a href="{{ route('recipes.show', $favorite->id) }}" 
-                                   class="btn-secondary btn-sm">
-                                    Voir
+                <div class="p-6 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition">
+                    <div class="flex flex-col md:flex-row gap-4">
+                        @if($favorite->image_url)
+                        <img src="{{ $favorite->image_url }}"
+                            alt="{{ $favorite->title }}"
+                            class="w-full md:w-32 h-24 object-cover rounded-lg"
+                            loading="lazy">
+                        @endif
+                        <div class="flex-1">
+                            <h3 class="font-bold text-lg">
+                                <a href="{{ route('recipes.show', $favorite->id) }}"
+                                    class="hover:text-primary transition">
+                                    {{ $favorite->title }}
                                 </a>
+                            </h3>
+                            <div class="flex flex-wrap gap-4 text-sm text-gray-600 dark:text-gray-400 mt-2">
+                                <span>{{ $favorite->prep_time }} min</span>
+                                <span>{{ $favorite->cost }}€</span>
+                                @if($favorite->is_vegetarian)
+                                <span class="text-green-600 dark:text-green-400">Végétarien</span>
+                                @endif
                             </div>
                         </div>
+                        <div class="flex items-center gap-2">
+                            <button @click="toggleFavorite({{ $favorite->id }})"
+                                class="text-red-500 hover:text-red-700 p-2">
+                                <i class="fas fa-heart"></i>
+                            </button>
+                            <a href="{{ route('recipes.show', $favorite->id) }}"
+                                class="btn-secondary btn-sm">
+                                Voir
+                            </a>
+                        </div>
                     </div>
+                </div>
                 @empty
-                    <div class="p-6 text-center text-gray-500">
-                        <p>Vous n'avez aucune recette favorite pour le moment.</p>
-                        <a href="{{ route('recipes.index') }}" class="btn-primary mt-4 inline-block">
-                            Explorer les recettes
-                        </a>
-                    </div>
+                <div class="p-6 text-center text-gray-500">
+                    <p>Vous n'avez aucune recette favorite pour le moment.</p>
+                    <a href="{{ route('recipes.index') }}" class="btn-primary mt-4 inline-block">
+                        Explorer les recettes
+                    </a>
+                </div>
                 @endforelse
             </div>
         </div>
@@ -113,12 +113,14 @@
 @push('scripts')
 <script>
     function toggleFavorite(recipeId) {
-        axios.post('/favorites/toggle', { recipe_id: recipeId })
+        axios.post('/favorites/toggle', {
+                recipe_id: recipeId
+            })
             .then(response => {
                 if (response.data.status === 'removed') {
                     // Supprimer visuellement de la liste
                     document.querySelector(`[data-recipe="${recipeId}"]`).remove();
-                    
+
                     // Mettre à jour le compteur
                     const countElement = document.querySelector('.favorites-count');
                     if (countElement) {

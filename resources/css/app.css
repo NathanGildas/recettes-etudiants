@@ -1,3 +1,7 @@
+/*
+  The following directives are for Tailwind CSS and must be processed by Tailwind's build tool (e.g., via PostCSS).
+  Do not use this file directly in the browser; instead, build your CSS with Tailwind first.
+*/
 @tailwind base;
 @tailwind components;
 @tailwind utilities;

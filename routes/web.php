@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\RecipeController;
 use App\Http\Controllers\DashboardController;
@@ -19,7 +20,6 @@ Route::controller(HomeController::class)->group(function () {
 });
 
 Route::controller(RecipeController::class)->group(function () {
-    Route::get('/', 'index')->name('home');
     Route::get('/recipes', 'index')->name('recipes.index');
     Route::get('/recipes/{recipe}', 'show')->name('recipes.show');
 });
@@ -30,6 +30,11 @@ Route::controller(RecipeController::class)->group(function () {
 |--------------------------------------------------------------------------
 */
 require __DIR__ . '/auth.php';
+
+Route::get('/login', [AuthenticatedSessionController::class, 'create'])
+    ->middleware('guest')
+    ->name('login');
+
 
 /*
 |--------------------------------------------------------------------------
