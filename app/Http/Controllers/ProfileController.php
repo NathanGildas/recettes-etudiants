@@ -26,15 +26,41 @@ class ProfileController extends Controller
      */
     public function update(ProfileUpdateRequest $request): RedirectResponse
     {
-        $request->user()->fill($request->validated());
-
-        if ($request->user()->isDirty('email')) {
-            $request->user()->email_verified_at = null;
+        $user = $request->user();
+        
+        // Déterminer quel type de mise à jour est effectué
+        $updateType = $request->has('is_vegetarian') ? 'preferences' : 'profile';
+        
+        // Remplir l'utilisateur avec les champs validés
+        if ($updateType === 'preferences') {
+            // Mise à jour des préférences culinaires
+            $user->fill([
+                'is_vegetarian' => $request->boolean('is_vegetarian'),
+                'is_vegan' => $request->boolean('is_vegan'),
+                'is_gluten_free' => $request->boolean('is_gluten_free'), 
+                'is_lactose_free' => $request->boolean('is_lactose_free'),
+                'skill_level' => $request->input('skill_level'),
+                'budget_preference' => $request->input('budget_preference'),
+                'max_prep_time' => $request->integer('max_prep_time'),
+                'notify_new_recipes' => $request->boolean('notify_new_recipes'),
+                'notify_weekly_meal' => $request->boolean('notify_weekly_meal'),
+            ]);
+            
+            $statusMessage = 'preferences-updated';
+        } else {
+            // Mise à jour des informations de profil standard
+            $user->fill($request->validated());
+            
+            if ($user->isDirty('email')) {
+                $user->email_verified_at = null;
+            }
+            
+            $statusMessage = 'profile-updated';
         }
 
-        $request->user()->save();
+        $user->save();
 
-        return Redirect::route('profile.edit')->with('status', 'profile-updated');
+        return Redirect::route('profile.edit')->with('status', $statusMessage);
     }
 
     /**
@@ -56,5 +82,19 @@ class ProfileController extends Controller
         $request->session()->regenerateToken();
 
         return Redirect::to('/');
+    }
+    
+    /**
+     * Afficher les recettes recommandées pour l'utilisateur.
+     */
+    public function recommendations(Request $request): View
+    {
+        $user = $request->user();
+        $recommendedRecipes = $user->getRecommendedRecipes(6);
+        
+        return view('profile.recommendations', [
+            'user' => $user,
+            'recommendedRecipes' => $recommendedRecipes,
+        ]);
     }
 }
