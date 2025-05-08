@@ -15,11 +15,6 @@
                             Voici votre espace personnel. Retrouvez vos recettes favorites et vos dernières activités.
                         </p>
                     </div>
-                    <a href="{{ route('recipes.create') }}"
-                        class="btn-primary inline-flex items-center gap-2">
-                        <i class="fas fa-plus"></i>
-                        Ajouter une recette
-                    </a>
                 </div>
             </div>
         </div>

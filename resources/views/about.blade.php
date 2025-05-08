@@ -1,5 +1,3 @@
-@include('partials.header')
-
 @extends('layouts.app')
 
 @section('content')
@@ -55,4 +53,3 @@
     </div>
 </section>
 @endsection
-@include('partials.footer')

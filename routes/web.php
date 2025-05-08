@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RecipeController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ShoppingListController;
@@ -21,6 +22,8 @@ Route::controller(HomeController::class)->group(function () {
 
 Route::controller(RecipeController::class)->group(function () {
     Route::get('/recipes', 'index')->name('recipes.index');
+    Route::get('/recipes/search', 'search')->name('recipes.search');
+    Route::get('/recipes/filter', 'filter')->name('recipes.filter'); // Nouvelle route
     Route::get('/recipes/{recipe}', 'show')->name('recipes.show');
 });
 
@@ -44,19 +47,26 @@ Route::get('/login', [AuthenticatedSessionController::class, 'create'])
 Route::middleware(['auth'])->group(function () {
     // Dashboard
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
-
+    
+    Route::controller(ProfileController::class)->prefix('profile')->name('profile.')->group(function () {
+        Route::get('/', 'edit')->name('edit');
+        Route::patch('/', 'update')->name('update');
+        Route::delete('/', 'destroy')->name('destroy');
+    });
+    
     // Favorites
     Route::controller(FavoriteController::class)->prefix('favorites')->group(function () {
         Route::post('/', 'store')->name('favorites.store');
         Route::delete('/{recipe}', 'destroy')->name('favorites.destroy');
+        Route::post('/toggle/{recipe}', 'toggle')->name('favorites.toggle'); // Route pour basculer un favori
     });
 
     // Shopping List
     Route::controller(ShoppingListController::class)->prefix('shopping-list')->group(function () {
         Route::get('/', 'index')->name('shopping-list.index');
         Route::post('/', 'store')->name('shopping-list.store');
+        Route::delete('/clear', 'clear')->name('shopping-list.clear'); // Modifié /clear au lieu de /
         Route::delete('/{recipe}', 'destroy')->name('shopping-list.destroy');
-        Route::delete('/', 'clear')->name('shopping-list.clear');
     });
 });
 

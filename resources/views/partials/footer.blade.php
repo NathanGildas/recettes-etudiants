@@ -82,7 +82,3 @@
         </div>
     </div>
 </footer>
-
-<!-- Scripts -->
-<script src="{{ asset('js/script.js') }}" defer></script>
-@stack('scripts')

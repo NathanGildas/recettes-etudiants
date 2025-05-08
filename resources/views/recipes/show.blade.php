@@ -1,5 +1,6 @@
-@include('partials.header')
+@extends('layouts.app')
 
+@section('content')
 <main class="py-8">
     <article class="container max-w-4xl mx-auto px-4">
         <!-- Header avec boutons d'action -->
@@ -23,18 +24,20 @@
 
             <div class="flex gap-2">
                 @auth
-                <button @click="toggleFavorite({{ $recipe->id }})"
-                    class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700"
-                    :class="{ 'text-red-500': isFavorite({{ $recipe->id }}) }">
-                    <i class="fas fa-heart"></i>
+                <!-- Bouton de favori sans attribut onclick, utiliser data-id à la place -->
+                <button 
+                    data-id="{{ $recipe->id }}"
+                    class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 favorite-btn"
+                    id="favorite-btn-{{ $recipe->id }}">
+                    <i class="fas fa-heart {{ in_array($recipe->id, auth()->user()->favorites->pluck('id')->toArray()) ? 'text-red-500' : '' }}"></i>
                 </button>
                 @endauth
-                @if(auth()->user()?->is_admin)
+                @can('update', $recipe)
                 <a href="{{ route('recipes.edit', $recipe->id) }}"
                     class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700">
                     <i class="fas fa-edit"></i>
                 </a>
-                @endif
+                @endcan
             </div>
         </header>
 
@@ -51,7 +54,7 @@
         <!-- Description -->
         @if($recipe->description)
         <section class="prose dark:prose-invert max-w-none mb-8">
-            {!! Str::markdown($recipe->description) !!}
+            {!! nl2br(e($recipe->description)) !!}
         </section>
         @endif
 
@@ -68,7 +71,13 @@
                         <span class="mt-1">
                             <i class="fas fa-check-circle text-green-500"></i>
                         </span>
-                        <span>{{ $ingredient['original'] ?? $ingredient }}</span>
+                        <span>
+                            @if(is_array($ingredient))
+                                {{ $ingredient['original'] ?? '' }}
+                            @else
+                                {{ $ingredient }}
+                            @endif
+                        </span>
                     </li>
                     @endforeach
                 </ul>
@@ -82,9 +91,9 @@
                 </h2>
                 <div class="prose dark:prose-invert max-w-none">
                     @if($recipe->steps)
-                    {!! Str::markdown($recipe->steps) !!}
+                        {!! nl2br(e($recipe->steps)) !!}
                     @else
-                    <p class="text-gray-500">Instructions à venir.</p>
+                        <p class="text-gray-500">Instructions à venir.</p>
                     @endif
                 </div>
             </section>
@@ -100,33 +109,39 @@
         </section>
     </article>
 </main>
-
-@include('partials.footer')
+@endsection
 
 @push('scripts')
 <script>
-    function isFavorite(recipeId) {
-        return JSON.parse(localStorage.getItem('favorites') || []).includes(recipeId);
-    }
-
-    function toggleFavorite(recipeId) {
-        let favorites = JSON.parse(localStorage.getItem('favorites') || []);
-        const index = favorites.indexOf(recipeId);
-
-        if (index === -1) {
-            favorites.push(recipeId);
-            // Envoyer une requête API pour sauvegarder côté serveur
-            axios.post('/favorites', {
-                recipe_id: recipeId
+    document.addEventListener('DOMContentLoaded', function() {
+        // Sélectionner tous les boutons de favoris
+        const favoriteButtons = document.querySelectorAll('.favorite-btn');
+        
+        // Ajouter un écouteur d'événements à chaque bouton
+        favoriteButtons.forEach(function(button) {
+            button.addEventListener('click', function() {
+                const recipeId = this.getAttribute('data-id');
+                toggleFavorite(recipeId, this);
             });
-        } else {
-            favorites.splice(index, 1);
-            // Envoyer une requête API pour supprimer côté serveur
-            axios.delete('/favorites/' + recipeId);
+        });
+        
+        // Fonction pour basculer le statut de favori
+        function toggleFavorite(recipeId, buttonElement) {
+            const heartIcon = buttonElement.querySelector('i');
+            
+            // Envoyer une requête AJAX pour basculer le favori
+            axios.post('/favorites/toggle/' + recipeId)
+                .then(function(response) {
+                    if (response.data.status === 'added') {
+                        heartIcon.classList.add('text-red-500');
+                    } else {
+                        heartIcon.classList.remove('text-red-500');
+                    }
+                })
+                .catch(function(error) {
+                    console.error('Erreur lors de la gestion des favoris:', error);
+                });
         }
-
-        localStorage.setItem('favorites', JSON.stringify(favorites));
-        return favorites.includes(recipeId);
-    }
+    });
 </script>
 @endpush

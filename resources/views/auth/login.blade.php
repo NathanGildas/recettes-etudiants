@@ -7,40 +7,54 @@
         </a>
     </div>
     @else
-    <!-- Modal amélioré avec AlpineJS -->
-    <div x-data="{ showLogin: false }" class="text-center">
-        <button @click="showLogin = true" class="btn-primary">
-            Se connecter
-        </button>
-
-        <!-- Modal -->
-        <div x-show="showLogin"
-            x-transition:enter="transition ease-out duration-300"
-            x-transition:enter-start="opacity-0"
-            x-transition:enter-end="opacity-100"
-            x-transition:leave="transition ease-in duration-200"
-            x-transition:leave-start="opacity-100"
-            x-transition:leave-end="opacity-0"
-            class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-50"
-            @click.away="showLogin = false">
-            <div class="w-full max-w-md bg-white rounded-lg shadow-xl overflow-hidden">
-                <div class="p-6">
-                    <div class="flex justify-between items-center mb-4">
-                        <h2 class="text-2xl font-bold text-gray-800">Connexion</h2>
-                        <button @click="showLogin = false" class="text-gray-500 hover:text-gray-700">
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                            </svg>
-                        </button>
-                    </div>
-
-                    <form method="POST" action="{{ route('login') }}">
-                        @csrf
-                        <!-- Reste du formulaire inchangé -->
-                    </form>
+    <div x-data="{ showLogin: true }" class="login-container py-8">
+        <div class="w-full max-w-md mx-auto">
+            <div class="login-form p-6">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-2xl font-bold text-gray-800">Connexion</h2>
                 </div>
 
-                <div class="px-6 py-4 bg-gray-50 border-t border-gray-200">
+                <form method="POST" action="{{ route('login') }}">
+                    @csrf
+
+                    <!-- Email Address -->
+                    <div class="mb-4">
+                        <x-input-label for="email" value="Email" />
+                        <x-text-input id="email" class="block mt-1 w-full input-style" 
+                            type="email" name="email" :value="old('email')" required autofocus />
+                        <x-input-error :messages="$errors->get('email')" class="mt-2 x-input-error" />
+                    </div>
+
+                    <!-- Password -->
+                    <div class="mb-4">
+                        <x-input-label for="password" value="Mot de passe" />
+                        <x-text-input id="password" class="block mt-1 w-full input-style"
+                            type="password" name="password" required />
+                        <x-input-error :messages="$errors->get('password')" class="mt-2 x-input-error" />
+                    </div>
+
+                    <!-- Remember Me -->
+                    <div class="block mb-4">
+                        <label for="remember_me" class="inline-flex items-center">
+                            <input id="remember_me" type="checkbox" class="rounded dark:bg-gray-900 border-gray-300 dark:border-gray-700 text-primary focus:ring-primary dark:focus:ring-primary dark:focus:ring-offset-gray-800 shadow-sm" name="remember">
+                            <span class="ml-2 text-sm text-gray-600 dark:text-gray-400">Se souvenir de moi</span>
+                        </label>
+                    </div>
+
+                    <div class="flex items-center justify-between mb-4">
+                        @if (Route::has('password.request'))
+                        <a class="text-sm text-primary hover:text-primary-dark" href="{{ route('password.request') }}">
+                            Mot de passe oublié?
+                        </a>
+                        @endif
+
+                        <x-primary-button class="btn-primary">
+                            Se connecter
+                        </x-primary-button>
+                    </div>
+                </form>
+
+                <div class="mt-6 pt-4 border-t border-gray-200">
                     <p class="text-center text-sm text-gray-600">
                         Pas encore de compte ?
                         <a href="{{ route('register') }}" class="font-medium text-primary hover:text-primary-dark">

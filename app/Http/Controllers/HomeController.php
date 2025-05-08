@@ -9,9 +9,9 @@ class HomeController extends Controller
 {
     public function index()
     {
-        // Exemple : 3 recettes aléatoires
-        $recipes = \App\Models\Recipe::inRandomOrder()->limit(3)->get();
-        return view('home', compact('recipes'));
+        // Récupérer 3 recettes populaires (vous pourriez ajouter un critère comme le nombre de favoris)
+        $recipes = Recipe::inRandomOrder()->limit(3)->get();
+        return view('home', compact('recipes')); // Utilisez index.blade.php au lieu de home.blade.php
     }
     public function about()
     {

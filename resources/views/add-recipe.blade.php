@@ -1,5 +1,6 @@
-@include('partials.header')
+@extends('layouts.app')
 
+@section('content')
 <main class="py-8">
     <div class="container max-w-4xl mx-auto px-4">
         <h1 class="text-3xl font-bold mb-6">Ajouter une recette</h1>
@@ -160,8 +161,7 @@
         </section>
     </div>
 </main>
-
-@include('partials.footer')
+@endsection
 
 @push('scripts')
 <script>

@@ -80,9 +80,84 @@ class RecipeController extends Controller
             return redirect('/recipes')->with('success', 'Recettes importées avec succès !');
         }
 
-        return back()->with('error', 'Échec de l’importation depuis Spoonacular.');
+        return back()->with('error', 'Échec de l\'importation depuis Spoonacular.');
     }
 
+    /**
+     * Filtrer les recettes (AJAX)
+     */
+    public function filter(Request $request)
+    {
+        $query = Recipe::query();
+        
+        // Filtrer par budget
+        if ($request->has('budget') && !empty($request->budget)) {
+            switch ($request->budget) {
+                case 'low':
+                    $query->where('cost', '<', 5);
+                    break;
+                case 'medium':
+                    $query->whereBetween('cost', [5, 10]);
+                    break;
+                case 'high':
+                    $query->where('cost', '>', 10);
+                    break;
+            }
+        }
+        
+        // Filtrer par temps de préparation
+        if ($request->has('time') && !empty($request->time)) {
+            $time = (int) $request->time;
+            
+            if ($time == 15) {
+                $query->where('prep_time', '<', 15);
+            } elseif ($time == 30) {
+                $query->whereBetween('prep_time', [15, 30]);
+            } elseif ($time == 60) {
+                $query->where('prep_time', '>', 30);
+            }
+        }
+        
+        // Filtrer par régime alimentaire
+        if ($request->has('diet') && !empty($request->diet)) {
+            if ($request->diet == 'vegetarian') {
+                $query->where('is_vegetarian', true);
+            }
+        }
+        
+        $recipes = $query->paginate(9);
+        
+        // Pour les requêtes AJAX, retourner uniquement le HTML partiel
+        if ($request->ajax() || $request->header('X-Requested-With') === 'XMLHttpRequest') {
+            return view('recipes.partials.grid', compact('recipes'))->render();
+        }
+        
+        // Pour les requêtes normales, retourner la vue complète
+        return view('recipes.index', compact('recipes'));
+    }
+    
+    public function search(Request $request)
+    {
+        $query = $request->input('query');
+        
+        // Si aucun terme de recherche n'est fourni, rediriger vers l'index des recettes
+        if (empty($query)) {
+            return redirect()->route('recipes.index');
+        }
+        
+        // Rechercher dans le titre et les ingrédients
+        $recipes = Recipe::where('title', 'like', "%{$query}%")
+            ->orWhere(function($q) use ($query) {
+                // Recherche dans le tableau JSON des ingrédients
+                // Cette implémentation peut varier selon la structure exacte de votre base de données
+                $q->whereJsonContains('ingredients', $query);
+            })
+            ->paginate(9);
+        
+        // Passer le terme de recherche à la vue
+        return view('recipes.index', compact('recipes'));
+    }
+    
     public function addRecipeForm()
     {
         // Récupère les 10 dernières recettes ajoutées

@@ -1,14 +1,3 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ $title ?? 'StudentRecipes' }}</title>
-    <link rel="stylesheet" href="{{ asset('css/style.css') }}">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Montserrat:wght@700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-</head>
-<body>
 <header class="main-header">
     <div class="container">
         <div class="logo">
@@ -20,13 +9,27 @@
         <nav class="main-nav">
             <ul>
                 <li><a href="/" class="{{ request()->is('/') ? 'active' : '' }}">Accueil</a></li>
-                <li><a href="/recipes" class="{{ request()->is('recipes') ? 'active' : '' }}">Recettes</a></li>
-                <li><a href="/login" class="{{ request()->is('login') ? 'active' : '' }}">Connexion</a></li>
-                <li><a href="/register" class="{{ request()->is('register') ? 'active' : '' }}">Inscription</a></li>
-                <li><a href="/dashboard" class="{{ request()->is('dashboard') ? 'active' : '' }}">Tableau de bord</a></li>
-                <li><a href="/profile" class="{{ request()->is('profile') ? 'active' : '' }}">Profil</a></li>
-                <li><a href="/shopping-list" class="{{ request()->is('shopping-list') ? 'active' : '' }}">Courses</a></li>
-                <li><a href="/about" class="{{ request()->is('about') ? 'active' : '' }}">À propos</a></li>
+                <li><a href="{{ route('recipes.index') }}" class="{{ request()->routeIs('recipes.*') ? 'active' : '' }}">Recettes</a></li>
+                
+                @guest
+                <li><a href="{{ route('login') }}" class="{{ request()->routeIs('login') ? 'active' : '' }}">Connexion</a></li>
+                <li><a href="{{ route('register') }}" class="{{ request()->routeIs('register') ? 'active' : '' }}">Inscription</a></li>
+                @else
+                <li><a href="{{ route('dashboard') }}" class="{{ request()->routeIs('dashboard') ? 'active' : '' }}">Tableau de bord</a></li>
+                <li><a href="{{ route('shopping-list.index') }}" class="{{ request()->routeIs('shopping-list.*') ? 'active' : '' }}">Courses</a></li>
+                <li><a href="{{ route('profile.edit') }}" class="{{ request()->routeIs('profile.*') ? 'active' : '' }}">Profil</a></li>
+                
+                <li>
+                    <form method="POST" action="{{ route('logout') }}" class="inline">
+                        @csrf
+                        <button type="submit" class="nav-link bg-transparent border-0 p-0">
+                            Déconnexion
+                        </button>
+                    </form>
+                </li>
+                @endguest
+                
+                <li><a href="{{ route('about') }}" class="{{ request()->routeIs('about') ? 'active' : '' }}">À propos</a></li>
             </ul>
         </nav>
         <div class="mobile-menu-toggle">
